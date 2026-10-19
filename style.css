@@ -21,9 +21,11 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 
 header{background:var(--card);border-radius:0 0 18px 18px;box-shadow:0 1px 4px var(--shadow);z-index:5;flex-shrink:0;
   padding:calc(env(safe-area-inset-top,0px) + 6px) max(12px,env(safe-area-inset-right,0px)) 12px max(12px,env(safe-area-inset-left,0px))}
-.bar{display:flex;align-items:center;height:44px}
-.bar button{background:none;border:0;padding:6px;cursor:pointer;display:flex}
-.bar h1{flex:1;min-width:0;text-align:center;font-size:20px;font-weight:800;margin:0;letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{display:flex;align-items:center;height:44px;position:relative}
+.bar button{background:none;border:0;padding:6px;cursor:pointer;display:flex;position:relative;z-index:1}
+.bar #btnSearch{margin-left:auto}
+/* centred on the whole bar, not on the space left between uneven button groups */
+.bar h1{position:absolute;left:84px;right:84px;top:50%;transform:translateY(-50%);text-align:center;font-size:20px;font-weight:800;margin:0;letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sub{display:flex;justify-content:center;align-items:center;gap:6px;font-weight:700;font-size:15px;margin-top:2px;font-variant-numeric:tabular-nums}
 .searchbox{margin-top:10px;display:flex;gap:8px;align-items:center}
 .searchbox input{flex:1;min-width:0;border:0;background:var(--field);color:var(--text);border-radius:10px;padding:9px 12px;font-size:16px;font-family:inherit}
