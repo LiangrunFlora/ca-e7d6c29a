@@ -332,7 +332,10 @@ $("importFile").onchange = async e => {
       data = JSON.parse(await (await zip.get(dj)).text());
     }
     if (!Array.isArray(data.messages)) throw new Error("文件里没有消息列表");
-    const seen = new Set(messages.map(sig));
+    // Count-based so a message legitimately sent twice in the same minute survives,
+    // while importing the same file again still adds nothing.
+    const seen = new Map();
+    for (const m of messages) seen.set(sig(m), (seen.get(sig(m)) || 0) + 1);
     let added = 0, dup = 0, filled = 0;
     for (const raw of data.messages) {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(raw.date || "")) continue;
@@ -343,7 +346,8 @@ $("importFile").onchange = async e => {
         if (zip && raw.media.file) blob = await zip.get(base + raw.media.file);
       }
       const s = sig(rec);
-      if (seen.has(s)) {
+      if (seen.get(s) > 0) {
+        seen.set(s, seen.get(s) - 1);
         // Same message already here: if it was waiting for its file and the backup has it, fill it in.
         const ex = messages.find(m => sig(m) === s);
         if (blob && ex?.media && !ex.media.key) {
@@ -354,7 +358,7 @@ $("importFile").onchange = async e => {
       }
       if (blob) { const key = newKey(); await dbPut("media", blob, key); rec.media = { type: rec.media.type, key }; }
       rec.id = await dbPut("messages", rec);
-      messages.push(rec); seen.add(s); added++;
+      messages.push(rec); added++;
     }
     if (data.profile) {
       const p = data.profile;
